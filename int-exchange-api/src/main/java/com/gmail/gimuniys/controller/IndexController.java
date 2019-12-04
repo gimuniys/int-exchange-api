@@ -7,12 +7,14 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gmail.gimuniys.model.Member;
-import com.gmail.gimuniys.model.Users;
-import com.gmail.gimuniys.repository.MemberRepository;
-import com.gmail.gimuniys.repository.UsersRepository;
+import com.gmail.gimuniys.model.jpa.Users;
+import com.gmail.gimuniys.model.mongo.MongoDTO;
+import com.gmail.gimuniys.repository.jpa.UsersRepository;
+import com.gmail.gimuniys.repository.mongo.MongoDAO;
 
 @RestController
 public class IndexController {
@@ -21,17 +23,13 @@ public class IndexController {
 	UsersRepository usersRepository;
 	
 	@Autowired
-	MemberRepository memberRepository;
+	MongoDAO memberRepository;
 	
 	@GetMapping("/test")
 	public Map<String, Object> testMessage() {
-		/*MySQL*/
-		List<Users> userList = usersRepository.findAll();
-		System.out.println(userList.toString());
-
 		/*MongoDB*/
-		List<Member> memberList = memberRepository.findAll();
-		System.out.println(memberList.toString());
+		List<MongoDTO> memberList = memberRepository.findAll();
+		System.out.println("===================== MongoDB =====================");
 		
 //		Member member = new Member();
 //		member.setUserId("egjeon");
@@ -41,8 +39,22 @@ public class IndexController {
 //		memberRepository.insert(member);
 		
 		Map<String, Object> result = new HashMap<>();
-		result.put("result", memberList);
+		result.put("memberList", memberList);
 		
+		return result;
+	}
+	
+	@PostMapping("/test")
+	public Map<String, Object> clientResponse(@RequestBody Map<String,Object> map) {
+		System.out.println("===================== MySQL =====================");
+		
+		/*MySQL*/
+		List<Users> userList = usersRepository.findAll();
+
+		Map<String, Object> result = new HashMap<>();
+		result.put("resultCode", 200);
+		result.put("userList", userList.toString());
+
 		return result;
 	}
 }
